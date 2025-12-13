@@ -18,8 +18,8 @@ const VerticalNavigationBar = () => {
           className: 'logo-sm',
         }}
         textLogo={{
-          height: 70,
-          width: 120,
+          height: 60,
+          width: 200,
           // className: 'logo-lg',
         }}
       />
