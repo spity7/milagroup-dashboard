@@ -2,8 +2,8 @@ import { createContext, useContext, useMemo } from 'react'
 import axios from 'axios'
 
 axios.defaults.withCredentials = true
-// const BASE_URL = 'https://api.milagroupco.com/api/v1/'
-const BASE_URL = 'http://localhost:5011/api/v1/'
+const BASE_URL = 'https://api.milagroupco.com/api/v1/'
+// const BASE_URL = 'http://localhost:5011/api/v1/'
 
 const GlobalContext = createContext()
 
