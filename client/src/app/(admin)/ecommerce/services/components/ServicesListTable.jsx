@@ -34,18 +34,14 @@ const ServicesListTable = ({ services }) => {
       header: 'Service Name',
       cell: ({
         row: {
-          original: { _id, iconUrl, name, description },
+          original: { _id, name, description },
         },
       }) => (
         <div className="d-flex align-items-center">
           <div className="flex-shrink-0 me-3">
-            {iconUrl ? (
-              <img src={iconUrl} alt={name} className="img-fluid avatar-sm" style={{ width: 50, height: 50, objectFit: 'contain' }} />
-            ) : (
-              <div className="bg-light d-flex align-items-center justify-content-center rounded" style={{ width: 50, height: 50 }}>
-                <IconifyIcon icon="bx:image" className="text-muted fs-4" />
-              </div>
-            )}
+            <div className="bg-light d-flex align-items-center justify-content-center rounded" style={{ width: 50, height: 50 }}>
+              <IconifyIcon icon="bx:image" className="text-muted fs-4" />
+            </div>
           </div>
           <div className="flex-grow-1">
             <h5 className="mt-0 mb-1">{name}</h5>

@@ -6,7 +6,7 @@ import ReactQuill from 'react-quill'
 import * as yup from 'yup'
 import SelectFormInput from '@/components/form/SelectFormInput'
 import TextFormInput from '@/components/form/TextFormInput'
-import { getAllProjectCategories } from '@/helpers/data'
+import { getAllProjectStatus } from '@/helpers/data'
 import { renameKeys } from '@/utils/rename-object-keys'
 import 'react-quill/dist/quill.snow.css'
 import { useGlobalContext } from '@/context/useGlobalContext'
@@ -14,8 +14,8 @@ import DropzoneFormInput from '@/components/form/DropzoneFormInput'
 
 const generalFormSchema = yup.object({
   name: yup.string().required('Project name is required'),
-  title: yup.string().required('Project title is required'),
-  category: yup.string().required('Project Category is required'),
+  status: yup.string().required('Project status is required'),
+  date: yup.date().typeError('Invalid date').required('Project date is required'),
   descQuill: yup.string().required('Project description is required'),
   location: yup.string().required('Project location is required'),
 })
@@ -30,22 +30,22 @@ const GeneralDetailsForm = () => {
   const [loading, setLoading] = useState(false)
   const [thumbnailFile, setThumbnailFile] = useState(null)
   const [galleryFiles, setGalleryFiles] = useState([])
-  const [projectCategories, setProjectCategories] = useState([])
+  const [projectStatus, setProjectStatus] = useState([])
   const [resetDropzones, setResetDropzones] = useState(false)
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const data = await getAllProjectCategories()
+    const fetchStatus = async () => {
+      const data = await getAllProjectStatus()
       if (!data) return
-      const categoryOptions = data.map((category) =>
-        renameKeys(category, {
+      const statusOptions = data.map((status) =>
+        renameKeys(status, {
           id: 'value',
           name: 'label',
         }),
       )
-      setProjectCategories(categoryOptions)
+      setProjectStatus(statusOptions)
     }
-    fetchCategories()
+    fetchStatus()
   }, [])
 
   const {
@@ -57,8 +57,8 @@ const GeneralDetailsForm = () => {
     resolver: yupResolver(generalFormSchema),
     defaultValues: {
       name: '',
-      title: '',
-      category: '',
+      status: '',
+      date: '',
       descQuill: '',
       location: '',
     },
@@ -74,12 +74,12 @@ const GeneralDetailsForm = () => {
 
       const formData = new FormData()
       formData.append('name', data.name)
-      formData.append('title', data.title)
+      formData.append('date', data.date)
 
       // ✅ Convert value to label before sending
-      const selectedCategory = projectCategories.find((cat) => cat.value === data.category)
-      const categoryName = selectedCategory ? selectedCategory.label : data.category
-      formData.append('category', categoryName)
+      const selectedStatus = projectStatus.find((cat) => cat.value === data.status)
+      const statusName = selectedStatus ? selectedStatus.label : data.status
+      formData.append('status', statusName)
 
       formData.append('description', data.descQuill)
       formData.append('location', data.location)
@@ -97,8 +97,8 @@ const GeneralDetailsForm = () => {
       // ✅ Clear all form fields properly
       reset({
         name: '',
-        title: '',
-        category: '',
+        date: '',
+        status: '',
         descQuill: '',
         location: '',
       })
@@ -129,13 +129,13 @@ const GeneralDetailsForm = () => {
           />
         </Col>
         <Col lg={6}>
-          {projectCategories.length > 0 && (
+          {projectStatus.length > 0 && (
             <div className="mb-3">
               <label htmlFor="projectSummary" className="form-label">
-                Category
+                Status
               </label>
-              <SelectFormInput control={control} name="category" options={projectCategories} />
-              {errors.category && <p className="text-danger mt-1">{errors.category.message}</p>}
+              <SelectFormInput control={control} name="status" options={projectStatus} />
+              {errors.status && <p className="text-danger mt-1">{errors.status.message}</p>}
             </div>
           )}
         </Col>
@@ -143,15 +143,7 @@ const GeneralDetailsForm = () => {
 
       <Row>
         <Col lg={6}>
-          <TextFormInput
-            control={control}
-            label="Project Title"
-            placeholder="Enter project title"
-            containerClassTitle="mb-3"
-            id="project-title"
-            name="title"
-            // error={errors.title?.message}
-          />
+          <TextFormInput control={control} label="Project Date" type="date" id="project-date" name="date" />
         </Col>
       </Row>
 

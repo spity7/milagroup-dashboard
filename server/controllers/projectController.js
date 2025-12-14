@@ -3,14 +3,13 @@ const { uploadImage, deleteImage } = require("../utils/gcs");
 
 exports.createProject = async (req, res) => {
   try {
-    const { name, title, category, description, location } = req.body;
+    const { name, status, description, location, date } = req.body;
     const thumbnailFile = req.files?.thumbnail?.[0];
     const galleryFiles = req.files?.gallery || [];
 
-    if (!name || !title || !category || !description || !location) {
+    if (!name || !status || !description || !location || !date) {
       return res.status(400).json({
-        message:
-          "Name, title, category, description, and location are required",
+        message: "Name, status, date, description, and location are required",
       });
     }
 
@@ -50,13 +49,18 @@ exports.createProject = async (req, res) => {
       }
     }
 
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate)) {
+      return res.status(400).json({ message: "Invalid project date" });
+    }
+
     // Save project to DB
     const newProject = await Project.create({
       name,
-      title,
-      category,
+      status,
       description,
       location,
+      date: parsedDate,
       thumbnailUrl,
       gallery: galleryUrls,
     });
@@ -97,7 +101,7 @@ exports.getProjectById = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
   try {
-    const { name, title, category, description, location } = req.body;
+    const { name, status, date, description, location } = req.body;
     const thumbnailFile = req.files?.thumbnail?.[0];
     const galleryFiles = req.files?.gallery || [];
 
@@ -107,7 +111,21 @@ exports.updateProject = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    const updateData = { name, title, category, description, location };
+    let parsedDate;
+    if (date) {
+      parsedDate = new Date(date);
+      if (isNaN(parsedDate)) {
+        return res.status(400).json({ message: "Invalid project date" });
+      }
+    }
+
+    const updateData = {
+      name,
+      status,
+      description,
+      location,
+      ...(parsedDate && { date: parsedDate }),
+    };
 
     // ✅ Handle new thumbnail upload
     if (thumbnailFile) {

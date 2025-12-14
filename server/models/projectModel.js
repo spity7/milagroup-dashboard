@@ -7,14 +7,9 @@ const projectSchema = new mongoose.Schema(
       required: [true, "Project name is required"],
       trim: true,
     },
-    title: {
+    status: {
       type: String,
-      required: [true, "Project title is required"],
-      trim: true,
-    },
-    category: {
-      type: String,
-      required: [true, "Category is required"],
+      required: [true, "Project Status is required"],
     },
     description: {
       type: String,
@@ -33,6 +28,10 @@ const projectSchema = new mongoose.Schema(
         type: String, // each string is a URL
       },
     ],
+    date: {
+      type: Date,
+      required: [true, "Project date is required"],
+    },
   },
   {
     timestamps: true, // adds createdAt & updatedAt

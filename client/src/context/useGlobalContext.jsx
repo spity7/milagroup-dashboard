@@ -27,9 +27,7 @@ export const GlobalProvider = ({ children }) => {
   }, [])
 
   const createService = async (data) => {
-    const response = await axiosInstance.post('/services', data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    const response = await axiosInstance.post('/services', data)
     return response.data
   }
 
@@ -44,9 +42,7 @@ export const GlobalProvider = ({ children }) => {
   }
 
   const updateService = async (id, data) => {
-    const response = await axiosInstance.put(`/services/${id}`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    const response = await axiosInstance.put(`/services/${id}`, data)
     return response.data.service
   }
 

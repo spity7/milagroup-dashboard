@@ -26,7 +26,7 @@ const Services = () => {
   return (
     <>
       <PageMetaData title="Services List" />
-      <PageBreadcrumb title="Services List" subName="Vertex" />
+      <PageBreadcrumb title="Services List" subName="MilaGroup" />
       <Row>
         <Col>
           <Card>

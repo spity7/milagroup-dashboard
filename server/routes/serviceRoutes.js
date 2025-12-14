@@ -9,13 +9,10 @@ const {
   deleteService,
 } = require("../controllers/serviceController");
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
-router.post("/services", upload.single("icon"), createService);
+router.post("/services", createService);
 router.get("/services", getAllServices);
 router.get("/services/:id", getServiceById);
-router.put("/services/:id", upload.single("icon"), updateService);
+router.put("/services/:id", updateService);
 router.delete("/services/:id", deleteService);
 
 module.exports = router;

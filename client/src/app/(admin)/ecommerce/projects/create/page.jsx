@@ -6,7 +6,7 @@ import PageMetaData from '@/components/PageTitle'
 const CreateProject = () => {
   return (
     <>
-      <PageBreadcrumb title="Create Project" subName="Vertex" />
+      <PageBreadcrumb title="Create Project" subName="MilaGroup" />
       <PageMetaData title="Create Project" />
 
       <Row>

@@ -16,18 +16,18 @@ import avatar8 from '@/assets/images/users/avatar-8.jpg'
 import avatar9 from '@/assets/images/users/avatar-9.jpg'
 import avatar10 from '@/assets/images/users/avatar-10.jpg'
 
-export const projectsCategoriesData = [
+export const projectsStatusData = [
   {
     id: 'pc1',
-    name: 'Electrical',
+    name: 'UnderConstruction',
   },
   {
     id: 'pc2',
-    name: 'Mechanical',
+    name: 'Finished',
   },
   {
     id: 'pc3',
-    name: 'MEP',
+    name: 'ComingSoon',
   },
 ]
 

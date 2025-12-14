@@ -11,10 +11,6 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       required: [true, "Service description is required"],
     },
-    iconUrl: {
-      type: String,
-      required: [true, "Service icon is required"],
-    },
   },
   { timestamps: true }
 );

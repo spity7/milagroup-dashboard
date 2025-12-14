@@ -1,10 +1,8 @@
 const Service = require("../models/serviceModel");
-const { uploadImage, deleteImage } = require("../utils/gcs");
 
 exports.createService = async (req, res) => {
   try {
     const { name, description } = req.body;
-    const file = req.file;
 
     if (!name || !description) {
       return res
@@ -12,21 +10,9 @@ exports.createService = async (req, res) => {
         .json({ message: "Name and description are required" });
     }
 
-    if (!file) {
-      return res.status(400).json({ message: "Image icon is required" });
-    }
-
-    if (!file.mimetype.startsWith("image/")) {
-      return res.status(400).json({ message: "Only image files are allowed" });
-    }
-
-    const fileName = `services/icons/${Date.now()}_${file.originalname}`;
-    const iconUrl = await uploadImage(file.buffer, fileName, file.mimetype);
-
     const newService = await Service.create({
       name,
       description,
-      iconUrl,
     });
 
     res.status(201).json({
@@ -63,7 +49,6 @@ exports.getServiceById = async (req, res) => {
 exports.updateService = async (req, res) => {
   try {
     const { name, description } = req.body;
-    const file = req.file;
 
     // Find existing service first
     const existingService = await Service.findById(req.params.id);
@@ -71,23 +56,6 @@ exports.updateService = async (req, res) => {
       return res.status(404).json({ message: "Service not found" });
 
     const updateData = { name, description };
-
-    // If new icon uploaded → upload to Google Cloud and replace
-    if (file) {
-      if (!file.mimetype.startsWith("image/")) {
-        return res
-          .status(400)
-          .json({ message: "Only image files are allowed" });
-      }
-
-      if (existingService.iconUrl) {
-        await deleteImage(existingService.iconUrl);
-      }
-
-      const fileName = `services/icons/${Date.now()}_${file.originalname}`;
-      const iconUrl = await uploadImage(file.buffer, fileName, file.mimetype);
-      updateData.iconUrl = iconUrl;
-    }
 
     const updatedService = await Service.findByIdAndUpdate(
       req.params.id,
@@ -112,11 +80,6 @@ exports.deleteService = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id);
     if (!service) return res.status(404).json({ message: "Service not found" });
-
-    // Delete icon from GCS if exists
-    if (service.iconUrl) {
-      await deleteImage(service.iconUrl);
-    }
 
     // Delete service from MongoDB
     await service.deleteOne();

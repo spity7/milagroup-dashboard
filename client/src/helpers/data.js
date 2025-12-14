@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 import {
-  projectsCategoriesData,
+  projectsStatusData,
   categoriesData,
   customersData,
   ecommerceProductsData,
@@ -74,9 +74,9 @@ export const getAllEcommerceProducts = async () => {
   return productsData
 }
 
-export const getAllProjectCategories = async () => {
+export const getAllProjectStatus = async () => {
   await sleep()
-  return projectsCategoriesData
+  return projectsStatusData
 }
 
 export const getAllProductCategories = async () => {

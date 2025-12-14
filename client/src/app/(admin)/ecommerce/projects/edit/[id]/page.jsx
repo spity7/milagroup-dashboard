@@ -9,7 +9,7 @@ import DropzoneFormInput from '@/components/form/DropzoneFormInput'
 import SelectFormInput from '@/components/form/SelectFormInput'
 import { renameKeys } from '@/utils/rename-object-keys'
 import 'react-quill/dist/quill.snow.css'
-import { getAllProjectCategories } from '@/helpers/data'
+import { getAllProjectStatus } from '@/helpers/data'
 
 const EditProject = () => {
   const { id } = useParams()
@@ -18,31 +18,31 @@ const EditProject = () => {
 
   const [project, setProject] = useState(null)
   const [name, setName] = useState('')
-  const [title, setTitle] = useState('')
+  const [date, setDate] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('')
+  const [status, setStatus] = useState('')
   const [location, setLocation] = useState('')
   const [thumbnail, setThumbnail] = useState(null)
   const [preview, setPreview] = useState(null)
   const [galleryFiles, setGalleryFiles] = useState([])
   const [existingGallery, setExistingGallery] = useState([])
-  const [projectCategories, setProjectCategories] = useState([])
+  const [projectStatus, setProjectStatus] = useState([])
   const [loading, setLoading] = useState(false)
 
-  // ✅ Fetch categories
+  // ✅ Fetch status
   useEffect(() => {
-    const fetchCategories = async () => {
-      const data = await getAllProjectCategories()
+    const fetchStatus = async () => {
+      const data = await getAllProjectStatus()
       if (!data) return
-      const options = data.map((category) =>
-        renameKeys(category, {
+      const options = data.map((status) =>
+        renameKeys(status, {
           id: 'value',
           name: 'label',
         }),
       )
-      setProjectCategories(options)
+      setProjectStatus(options)
     }
-    fetchCategories()
+    fetchStatus()
   }, [])
 
   useEffect(() => {
@@ -51,12 +51,12 @@ const EditProject = () => {
         const data = await getProjectById(id)
         setProject(data)
         setName(data.name)
-        setTitle(data.title)
+        setDate(data.date ? data.date.split('T')[0] : '')
         setDescription(data.description)
 
-        // ✅ Find matching option by label (since API gives category name)
-        const matchedCategory = projectCategories.find((cat) => cat.label === data.category)
-        setCategory(matchedCategory ? matchedCategory.value : '')
+        // ✅ Find matching option by label (since API gives status name)
+        const matchedStatus = projectStatus.find((cat) => cat.label === data.status)
+        setStatus(matchedStatus ? matchedStatus.value : '')
 
         setLocation(data.location)
         setPreview(data.thumbnailUrl)
@@ -65,9 +65,9 @@ const EditProject = () => {
         alert('Failed to load project')
       }
     }
-    // ✅ wait until categories are loaded
-    if (projectCategories.length > 0) fetchProject()
-  }, [id, getProjectById, projectCategories])
+    // ✅ wait until status are loaded
+    if (projectStatus.length > 0) fetchProject()
+  }, [id, getProjectById, projectStatus])
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -87,13 +87,13 @@ const EditProject = () => {
       setLoading(true)
       const formData = new FormData()
       formData.append('name', name)
-      formData.append('title', title)
+      formData.append('date', date)
       formData.append('description', description)
 
-      // ✅ Convert selected category value -> label (to match backend)
-      const selectedCategory = projectCategories.find((cat) => cat.value === category)
-      const categoryName = selectedCategory ? selectedCategory.label : category
-      formData.append('category', categoryName)
+      // ✅ Convert selected status value -> label (to match backend)
+      const selectedStatus = projectStatus.find((cat) => cat.value === status)
+      const statusName = selectedStatus ? selectedStatus.label : status
+      formData.append('status', statusName)
 
       formData.append('location', location)
 
@@ -132,7 +132,7 @@ const EditProject = () => {
   return (
     <>
       <PageMetaData title="Edit Project" />
-      <PageBreadcrumb title="Edit Project" subName="Vertex" />
+      <PageBreadcrumb title="Edit Project" subName="MilaGroup" />
       <Row>
         <Col>
           <Card>
@@ -144,17 +144,17 @@ const EditProject = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">Project Title</label>
-                  <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                  <label className="form-label">Project Date</label>
+                  <input type="date" className="form-control" value={date} onChange={(e) => setDate(e.target.value)} required />
                 </div>
 
                 {/* ✅ Replace input with dropdown */}
                 <div className="mb-3">
-                  <label className="form-label">Category</label>
-                  {projectCategories.length > 0 ? (
-                    <SelectFormInput name="category" options={projectCategories} value={category} onChange={(val) => setCategory(val)} />
+                  <label className="form-label">Status</label>
+                  {projectStatus.length > 0 ? (
+                    <SelectFormInput name="status" options={projectStatus} value={status} onChange={(val) => setStatus(val)} />
                   ) : (
-                    <p>Loading categories...</p>
+                    <p>Loading status...</p>
                   )}
                 </div>
 

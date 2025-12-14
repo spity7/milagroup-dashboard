@@ -11,14 +11,6 @@ import { useGlobalContext } from '@/context/useGlobalContext'
 const generalFormSchema = yup.object({
   name: yup.string().required('Service name is required'),
   descQuill: yup.string().required('Service description is required'),
-  icon: yup
-    .mixed()
-    .required('Service image is required')
-    .test('fileType', 'Only image files are allowed (SVG, PNG, JPG, etc.)', (value) => {
-      if (!value || !value[0]) return false
-      const allowedTypes = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif']
-      return allowedTypes.includes(value[0].type)
-    }),
 })
 
 const normalizeQuillValue = (value) => {
@@ -29,7 +21,6 @@ const normalizeQuillValue = (value) => {
 const GeneralDetailsForm = () => {
   const { createService } = useGlobalContext()
   const [loading, setLoading] = useState(false)
-  const [preview, setPreview] = useState(null)
 
   const {
     control,
@@ -42,43 +33,28 @@ const GeneralDetailsForm = () => {
     defaultValues: {
       name: '',
       descQuill: '',
-      icon: null,
     },
   })
 
   const onSubmit = async (data) => {
     try {
       setLoading(true)
-      const formData = new FormData()
-      formData.append('name', data.name)
-      formData.append('description', data.descQuill)
-      formData.append('icon', data.icon[0])
 
-      await createService(formData)
+      await createService({
+        name: data.name,
+        description: data.descQuill,
+      })
 
       alert('Service created successfully!')
 
       reset({
         name: '',
         descQuill: '',
-        icon: null,
       })
-      setPreview(null)
     } catch (error) {
       alert(error?.response?.data?.message || 'Failed to create service')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader()
-      reader.onload = () => setPreview(reader.result)
-      reader.readAsDataURL(file)
-    } else {
-      setPreview(null)
     }
   }
 
@@ -128,33 +104,6 @@ const GeneralDetailsForm = () => {
               )}
             />
             {errors.descQuill && <p className="text-danger mt-1">{errors.descQuill.message}</p>}
-          </div>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col lg={6}>
-          <div className="mb-4 mt-4">
-            <label className="form-label">Service Icon</label>
-            <input
-              type="file"
-              accept="image/*"
-              {...register('icon')}
-              className="form-control"
-              onChange={(e) => {
-                handleFileChange(e)
-                register('icon').onChange(e)
-              }}
-            />
-
-            {errors.icon && <p className="text-danger mt-1">{errors.icon.message}</p>}
-
-            {preview && (
-              <div className="mt-3">
-                <p className="mb-1 fw-bold">Preview:</p>
-                <img src={preview} alt="Image preview" width="100" height="100" />
-              </div>
-            )}
           </div>
         </Col>
       </Row>
